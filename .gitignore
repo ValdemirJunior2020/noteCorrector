@@ -1,0 +1,70 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Environment Variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+debug.log
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build files
+dist/
+build/
+.cache/
+.next/
+out/
+
+# Editor & System Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local development files
+coverage/
+*.pid
+*.seed
+*.pid.lock
+.cache-loader/
+.parcel-cache/
+.nyc_output/
+
+# TypeScript
+*.tsbuildinfo
+
+# Jest
+/jest.config.js
+/jest.setup.js
+/coverage
+
+# Linting
+/.eslintcache
+/.stylelintcache
+
+# Binaries
+*.exe
+*.out
+*.app
+*.dmg
+*.iso
+*.dll
+.env
+
+
+# Miscellaneous
+/.husky/
