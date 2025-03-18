@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const NoteCorrector = () => {
+  // ✅ Define state variables
   const [note, setNote] = useState("");
   const [correctedNote, setCorrectedNote] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Set backend URL correctly for Netlify deployment
-  const API_URL =
-    process.env.REACT_APP_BACKEND_URL || "https://your-backend-url.com"; // Change this to your real backend URL
+  // ✅ Backend URL (use env variable or fallback to localhost)
+  const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 
   const handleCorrection = async () => {
     if (!note.trim()) {
@@ -20,7 +20,7 @@ const NoteCorrector = () => {
     setLoading(true);
 
     try {
-      console.log("🔄 Sending request to backend...");
+      console.log("Sending request to backend...");
 
       const response = await axios.post(`${API_URL}/api/correct-text`, { text: note });
 
@@ -28,11 +28,11 @@ const NoteCorrector = () => {
         setCorrectedNote(response.data.correctedText);
         setShowPopup(true);
       } else {
-        console.error("⚠️ Unexpected API response:", response.data);
+        console.error("Unexpected API response:", response.data);
         alert("Unexpected response from backend. Please try again.");
       }
     } catch (error) {
-      console.error("❌ Error correcting text:", error);
+      console.error("Error correcting text:", error);
       alert(`Failed to correct the text: ${error.response?.data?.error || error.message}`);
     }
 
@@ -42,6 +42,7 @@ const NoteCorrector = () => {
   return (
     <div style={{ textAlign: "center", marginTop: "20px" }}>
       <h2>Call Center Note Corrector</h2>
+      
       <textarea
         rows="6"
         cols="50"
@@ -49,7 +50,9 @@ const NoteCorrector = () => {
         value={note}
         onChange={(e) => setNote(e.target.value)}
       ></textarea>
+
       <br />
+
       <button onClick={handleCorrection} style={{ marginTop: "10px" }} disabled={loading}>
         {loading ? "Correcting..." : "Correct My Notes"}
       </button>
