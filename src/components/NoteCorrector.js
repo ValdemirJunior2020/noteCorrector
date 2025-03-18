@@ -9,7 +9,8 @@ const NoteCorrector = () => {
   const [loading, setLoading] = useState(false);
 
   // ✅ Backend URL (use env variable or fallback to localhost)
-  const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+  const API_URL = process.env.REACT_APP_BACKEND_URL || "https://notecorrector-1.onrender.com";
+
 
   const handleCorrection = async () => {
     if (!note.trim()) {
