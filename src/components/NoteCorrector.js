@@ -7,6 +7,10 @@ const NoteCorrector = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // ✅ Set backend URL correctly for Netlify deployment
+  const API_URL =
+    process.env.REACT_APP_BACKEND_URL || "https://your-backend-url.com"; // Change this to your real backend URL
+
   const handleCorrection = async () => {
     if (!note.trim()) {
       alert("Please enter text to correct.");
@@ -16,19 +20,19 @@ const NoteCorrector = () => {
     setLoading(true);
 
     try {
-      console.log("Sending request to backend...");
+      console.log("🔄 Sending request to backend...");
 
-      const response = await axios.post("http://localhost:5000/api/correct-text", { text: note });
+      const response = await axios.post(`${API_URL}/api/correct-text`, { text: note });
 
       if (response.data && response.data.correctedText) {
         setCorrectedNote(response.data.correctedText);
         setShowPopup(true);
       } else {
-        console.error("Unexpected API response:", response.data);
+        console.error("⚠️ Unexpected API response:", response.data);
         alert("Unexpected response from backend. Please try again.");
       }
     } catch (error) {
-      console.error("Error correcting text:", error);
+      console.error("❌ Error correcting text:", error);
       alert(`Failed to correct the text: ${error.response?.data?.error || error.message}`);
     }
 
