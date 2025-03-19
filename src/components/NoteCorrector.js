@@ -8,33 +8,48 @@ const NoteCorrector = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Backend URL (use env variable or fallback to localhost)
+  // ✅ Backend URL (use env variable or fallback to Render URL)
   const API_URL = process.env.REACT_APP_BACKEND_URL || "https://notecorrector-1.onrender.com";
-
 
   const handleCorrection = async () => {
     if (!note.trim()) {
-      alert("Please enter text to correct.");
+      alert("⚠️ Please enter text to correct.");
       return;
     }
 
     setLoading(true);
 
     try {
-      console.log("Sending request to backend...");
+      console.log("🚀 Sending request to backend...");
 
-      const response = await axios.post(`${API_URL}/api/correct-text`, { text: note });
+      const response = await axios.post(
+        `${API_URL}/api/correct-text`,
+        { text: note },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      console.log("✅ API Response:", response.data);
 
       if (response.data && response.data.correctedText) {
         setCorrectedNote(response.data.correctedText);
         setShowPopup(true);
       } else {
-        console.error("Unexpected API response:", response.data);
-        alert("Unexpected response from backend. Please try again.");
+        console.error("⚠️ Unexpected API response format:", response.data);
+        alert("Unexpected response from the backend. Please try again.");
       }
     } catch (error) {
-      console.error("Error correcting text:", error);
-      alert(`Failed to correct the text: ${error.response?.data?.error || error.message}`);
+      console.error("❌ Error correcting text:", error);
+
+      if (error.response) {
+        console.error("Response Data:", error.response.data);
+        alert(`API Error: ${JSON.stringify(error.response.data, null, 2)}`);
+      } else if (error.request) {
+        console.error("No Response Received:", error.request);
+        alert("No response from the backend. Check your API URL and network connection.");
+      } else {
+        console.error("Request Setup Error:", error.message);
+        alert(`Request Error: ${error.message}`);
+      }
     }
 
     setLoading(false);
@@ -43,7 +58,7 @@ const NoteCorrector = () => {
   return (
     <div style={{ textAlign: "center", marginTop: "20px" }}>
       <h2>Call Center Note Corrector</h2>
-      
+
       <textarea
         rows="6"
         cols="50"
