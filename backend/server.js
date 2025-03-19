@@ -1,36 +1,58 @@
+require("dotenv").config(); // ✅ Load environment variables first
+
 const express = require("express");
 const cors = require("cors");
+const axios = require("axios");
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-// ✅ Allow frontend on Netlify + local development
-const allowedOrigins = [
-  "https://scintillating-horse-0a87dd.netlify.app", // Netlify frontend URL
-  "http://localhost:3000" // Local frontend URL
-];
-
-// ✅ Configure CORS Middleware
-app.use(
-  cors({
-    origin: allowedOrigins,
-    methods: ["GET", "POST"],
-    credentials: true
-  })
-);
-
+// ✅ Middleware
 app.use(express.json());
+app.use(cors());
 
-app.post("/api/correct-text", (req, res) => {
-  const { text } = req.body;
-  if (!text) {
-    return res.status(400).json({ error: "No text provided" });
+// ✅ OpenAI Rewording API Route
+app.post("/api/correct-text", async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text) return res.status(400).json({ error: "No text provided" });
+
+    console.log("🔄 Sending request to OpenAI...");
+
+    // ✅ OpenAI API Request for Rewording
+    const response = await axios.post(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        model: "gpt-4o", // Use "gpt-4" or "gpt-3.5-turbo" if needed
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a professional writer and editor. Rewrite the given text to improve grammar, clarity, and professionalism. Keep the meaning but enhance readability."
+          },
+          { role: "user", content: `Please reword this text:\n\n"${text}"` }
+        ]
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    console.log("✅ OpenAI Response:", response.data);
+
+    const correctedText = response.data.choices[0].message.content.trim();
+    res.json({ correctedText });
+
+  } catch (error) {
+    console.error("❌ OpenAI API Error:", error.response?.data || error.message);
+    res.status(500).json({ error: "Failed to reword the text" });
   }
-
-  // Fake response for testing (Replace with OpenAI API Call)
-  const correctedText = text.replace("wrld", "world");
-  res.json({ correctedText });
 });
 
-// ✅ Start the Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// ✅ Start Server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
